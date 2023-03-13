@@ -55,7 +55,7 @@ def file_download(source_url, output_dir, file_name):
 
 
 if __name__ == '__main__':
-    source_url = 'https://data.ecmwf.int/forecasts/20230312/00z/0p4-beta/oper/'
+    source_url = ''
     out_dir = './output/'
     files_to_download_list = page_parse(url=source_url)
     for i in range(len(files_to_download_list)):
