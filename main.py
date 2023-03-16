@@ -1,5 +1,23 @@
 from bs4 import BeautifulSoup
 import requests
+import datetime
+
+
+def date_format(date):
+    if date < 10:
+        return '0' + str(date)
+    else:
+        return str(date)
+
+
+def url_current_date():
+    current_date = datetime.datetime.now().date()
+    current_year = current_date.year
+    current_month = date_format(current_date.month)
+    current_day = current_date.day
+
+    result = (str(current_year)+current_month+str(current_day))
+    return result
 
 
 def filter_by_ext(content, extension):
@@ -55,7 +73,7 @@ def file_download(source_url, output_dir, file_name):
 
 
 if __name__ == '__main__':
-    source_url = ''
+    source_url = 'https://data.ecmwf.int/forecasts/' + url_current_date() + '/00z/0p4-beta/oper/'
     out_dir = './output/'
     files_to_download_list = page_parse(url=source_url)
     for i in range(len(files_to_download_list)):
