@@ -2,6 +2,12 @@ from bs4 import BeautifulSoup
 import requests
 import datetime
 
+import os
+
+
+"""Добавить логгирование через класс и 
+переделать форматьрование даты"""
+
 
 def date_format(date):
     if date < 10:
@@ -29,7 +35,6 @@ def filter_by_ext(content, extension):
 
 
 def filter_by_time(content, max_time):
-
     if content is None:
         return False
     else:
@@ -54,6 +59,27 @@ def page_parse(url):
     return out_list
 
 
+def url_to_path(out_dir, url):
+
+    url = url.split('/')
+    url_path = '\\'.join(url[3:-1])
+    path = os.path.join(out_dir, url_path)
+    return path
+
+
+def create_directory(path):
+    """Эта функция создает директория по данным ссылки
+    для скачивания файлов"""
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path)
+            return os.path.abspath(path)
+        except OSError:
+            pass
+    else:
+        return os.path.abspath(path)
+
+
 def file_download(source_url, output_dir, file_name):
     __SUCCESS__ = "Successfully done"
     __FAIL__ = "Downloading failed"
@@ -63,7 +89,7 @@ def file_download(source_url, output_dir, file_name):
         while tries < 10:
             response = requests.get(source_url, stream=True)
             if response.status_code == 200:
-                with open((str(output_dir + file_name)), 'wb') as file:
+                with open((str(output_dir + '\\' + file_name)), 'wb') as file:
                     file.write(response.content)
                 return print(__SUCCESS__)
             else:
@@ -74,11 +100,14 @@ def file_download(source_url, output_dir, file_name):
 
 if __name__ == '__main__':
     source_url = 'https://data.ecmwf.int/forecasts/' + url_current_date() + '/00z/0p4-beta/oper/'
-    out_dir = './output/'
+    out_dir = '.\\output\\'
+    create_directory(out_dir)
+
     files_to_download_list = page_parse(url=source_url)
     for i in range(len(files_to_download_list)):
+        path = create_directory(path=url_to_path(out_dir=out_dir, url=str(source_url + files_to_download_list[i])))
         file_download(
             source_url=str(source_url + files_to_download_list[i]),
-            output_dir=out_dir,
+            output_dir=path,
             file_name=files_to_download_list[i]
         )
